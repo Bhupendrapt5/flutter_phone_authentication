@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:folk_team_app/customWidgets/plateform_widget.dart';
+import 'package:mobile_authentication/customWidgets/plateform_widget.dart';
 
 class PlatformCircularProgressIndicator extends PlatformWidget {
   Widget show(BuildContext context) {
