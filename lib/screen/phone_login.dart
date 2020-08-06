@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_authentication/customWidgets/plateform_dialog_box.dart';
 import 'package:mobile_authentication/customWidgets/platform_circle_indicator.dart';
+import 'package:mobile_authentication/customWidgets/platform_dialog.dart';
 import 'package:mobile_authentication/helper/utility.dart';
 import 'package:mobile_authentication/provider/auth_provider.dart';
-import 'package:mobile_authentication/screen/otp_screen.dart';
 import 'package:provider/provider.dart';
+
+import '../helper/utility.dart';
 
 class PhoneLogineScreen extends StatelessWidget {
   static const String pageName = '/phone_verification';
@@ -111,12 +113,15 @@ class PhoneLogineScreen extends StatelessWidget {
       cancelActionText: 'Edit',
     ).show(context);
     if (confimr) {
-      showDialog(
-          context: context,
-          child: PlatformCircularProgressIndicator().show(context));
+      PlatFormDialogBox(
+        content: _dialogContent(context, 'Verifying number'),
+      ).show(context);
       var res = await provider.isNumberExist(_numberController.text);
       Navigator.pop(context);
       if (res) {
+        PlatFormDialogBox(
+          content: _dialogContent(context, 'Redirecting to OTP Screen'),
+        ).show(context);
         provider.verifyPhoneNumber(context, '+91' + _numberController.text);
       } else {
         PlatFormAlertDialogBox(
@@ -126,5 +131,26 @@ class PhoneLogineScreen extends StatelessWidget {
         ).show(context);
       }
     }
+  }
+
+  Widget _dialogContent(BuildContext context, String text) {
+    return Container(
+      height: Utility().getSize(context).height * 0.25,
+      width: Utility().getSize(context).width * 0.30,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PlatformCircularProgressIndicator().show(context),
+            SizedBox(
+              height: 20,
+            ),
+            Center(
+              child: Text(text),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

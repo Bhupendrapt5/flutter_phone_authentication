@@ -6,6 +6,8 @@ import 'package:mobile_authentication/screen/home_screen.dart';
 import 'package:mobile_authentication/screen/otp_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../screen/phone_login.dart';
+
 enum Status {
   Uninitialized,
   Authenticated,
@@ -30,19 +32,23 @@ class AuthProvider with ChangeNotifier {
   Status get status => _status;
   FirebaseUser get firebaseUser => _user;
 
-  AuthProvider.initialize() {
-    getPrefsData();
-  }
+  // AuthProvider.initialize() {
+  //   getPrefsData();
+  // }
 
-  Future<void> getPrefsData() async {
+  Future<bool> getPrefsData() async {
     await Future.delayed(Duration(seconds: 3)).then((value) async {
       _sharedPrefs = await SharedPreferences.getInstance();
 
       isLoggedIn = _sharedPrefs.getBool('loggedIn') ?? false;
+      // print('isLoggedIn : $isLoggedIn');
       if (isLoggedIn) {
         _user = await _auth.currentUser();
       }
+      notifyListeners();
     });
+
+    return isLoggedIn;
   }
 
   handleError(error, BuildContext context) {
@@ -65,6 +71,7 @@ class AuthProvider with ChangeNotifier {
     final PhoneCodeSent smsOTPSent = (String verId, [int forceCodeResend]) {
       this.verificationCode = verId;
       print('move to OTP');
+      Navigator.pop(context);
       Navigator.pushNamed(context, OTPScreen.pageName);
 
       // smsOTPDialog(context).then((value) {
@@ -112,7 +119,7 @@ class AuthProvider with ChangeNotifier {
       _sharedPrefs.setBool('loggedIn', true);
       this.isLoggedIn = true;
       if (_user != null) {
-        Navigator.pushReplacementNamed(context, HomeScreen.pageName);
+        Navigator.pushNamedAndRemoveUntil(context, HomeScreen.pageName,ModalRoute.withName(PhoneLogineScreen.pageName) );
       }
     } catch (e) {
       print("${e.toString()}");

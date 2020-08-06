@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_authentication/Route/route_generator.dart';
 import 'package:mobile_authentication/provider/auth_provider.dart';
-import 'package:mobile_authentication/screen/home_screen.dart';
-import 'package:mobile_authentication/screen/phone_login.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+import 'provider/auth_provider.dart';
+
+void main() async{
   runApp(MyApp());
 }
 
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<AuthProvider>(
-      create: (context) => AuthProvider.initialize(),
+      create: (context) => AuthProvider(),
       child: MaterialApp(
         title: 'Phone Auth',
         theme: ThemeData(
@@ -22,23 +22,10 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         debugShowCheckedModeBanner: false,
-        home: ScreensController(),
-        // initialRoute: '/',
+        // home: SplashScreen(),
+        initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
-  }
-}
-
-class ScreensController extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
-
-    if (auth.isLoggedIn) {
-      return HomeScreen();
-    } else {
-      return PhoneLogineScreen();
-    }
   }
 }
