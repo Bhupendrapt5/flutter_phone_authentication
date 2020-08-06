@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_authentication/screen/home_screen.dart';
+import 'package:mobile_authentication/screen/phone_login.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
@@ -49,7 +49,7 @@ class SplashScreen extends StatelessWidget {
       Duration(seconds: 3),
       () {
         print('object');
-        Navigator.pushReplacementNamed(context, HomeScreen.pageName);
+        Navigator.pushReplacementNamed(context, PhoneLogineScreen.pageName);
       },
     );
   }
