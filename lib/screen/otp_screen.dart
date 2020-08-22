@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_authentication/customWidgets/loading_indicator_with_text.dart';
+import 'package:mobile_authentication/customWidgets/platform_dialog.dart';
 import 'package:mobile_authentication/helper/utility.dart';
 import 'package:mobile_authentication/provider/auth_provider.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
@@ -48,6 +50,10 @@ class OTPScreen extends StatelessWidget {
               ),
               RaisedButton(
                 onPressed: () {
+                  PlatFormDialogBox(
+                    content: LoadingIndicatorWithMessage(text: 'Verifying OTP'),
+                  ).show(context);
+
                   _authProvider.signIn(
                       context: context, smsOTP: _codeController.text);
                 },

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_authentication/customWidgets/plateform_dialog_box.dart';
 import 'package:mobile_authentication/model/user_model.dart';
 import 'package:mobile_authentication/screen/home_screen.dart';
 import 'package:mobile_authentication/screen/otp_screen.dart';
-import 'package:mobile_authentication/screen/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screen/phone_login.dart';
@@ -105,28 +105,54 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  _createUser({String number, String id}) {}
-
-  signIn({BuildContext context, String smsOTP}) async {
+  void signIn({
+    BuildContext context,
+    String smsOTP,
+  }) async {
     try {
       final AuthCredential _authCredential = PhoneAuthProvider.getCredential(
         verificationId: verificationCode,
         smsCode: smsOTP,
       );
 
-      final AuthResult _user =
-          await _auth.signInWithCredential(_authCredential);
+      final AuthResult _user = await _auth
+          .signInWithCredential(_authCredential)
+          .then((value) => value, onError: (er) {
+        Navigator.pop(context);
+        PlatFormAlertDialogBox(
+          title: 'ALERT',
+          content: 'You have entered wrong OTP.',
+          defaultActionText: 'OK',
+        ).show(context);
+      });
       final FirebaseUser currentUser = await _auth.currentUser();
       assert(_user.user.uid == currentUser.uid);
-      _sharedPrefs.setBool('loggedIn', true);
-      this.isLoggedIn = true;
+      Navigator.pop(context);
       if (_user != null) {
+        _sharedPrefs.setBool('loggedIn', true);
+        this.isLoggedIn = true;
         Navigator.pushNamedAndRemoveUntil(
-            context, '/', ModalRoute.withName(PhoneLogineScreen.pageName));
+          context,
+          '/',
+          ModalRoute.withName(PhoneLogineScreen.pageName),
+        );
       }
     } catch (e) {
       print("${e.toString()}");
     }
+  }
+
+  Future signOut(BuildContext context) async {
+    await Future<void>.delayed(Duration(seconds: 1));
+    var _shredPref = await SharedPreferences.getInstance();
+    _shredPref.clear();
+    await _auth.signOut();
+    Navigator.pop(context);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/',
+      ModalRoute.withName(HomeScreen.pageName),
+    );
   }
 
   Future<bool> isNumberExist(String number) async {

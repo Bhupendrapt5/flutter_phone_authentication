@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_authentication/customWidgets/loading_indicator_with_text.dart';
 import 'package:mobile_authentication/customWidgets/plateform_dialog_box.dart';
-import 'package:mobile_authentication/customWidgets/platform_circle_indicator.dart';
 import 'package:mobile_authentication/customWidgets/platform_dialog.dart';
 import 'package:mobile_authentication/helper/utility.dart';
 import 'package:mobile_authentication/provider/auth_provider.dart';
@@ -115,14 +115,15 @@ class PhoneLogineScreen extends StatelessWidget {
     ).show(context);
     if (confimr) {
       PlatFormDialogBox(
-        content: _dialogContent(context, 'Verifying number'),
+        content: LoadingIndicatorWithMessage(text: 'Verifying number'),
       ).show(context);
       var res = await provider.isNumberExist(_numberController.text);
       print('number exist : $res');
       Navigator.pop(context);
       if (res) {
         PlatFormDialogBox(
-          content: _dialogContent(context, 'Redirecting to OTP Screen'),
+          content:
+              LoadingIndicatorWithMessage(text: 'Redirecting to OTP Screen'),
         ).show(context);
         provider.verifyPhoneNumber(context, '+91' + _numberController.text);
       } else {
@@ -133,26 +134,5 @@ class PhoneLogineScreen extends StatelessWidget {
         ).show(context);
       }
     }
-  }
-
-  Widget _dialogContent(BuildContext context, String text) {
-    return Container(
-      height: Utility().getSize(context).height * 0.25,
-      width: Utility().getSize(context).width * 0.30,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PlatformCircularProgressIndicator().show(context),
-            SizedBox(
-              height: 20,
-            ),
-            Center(
-              child: Text(text),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }
