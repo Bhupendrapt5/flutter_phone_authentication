@@ -1,18 +1,24 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 class User {
   final String number;
-  final String id;
+  final String uId;
 
   User({
     this.number,
-    this.id,
+    this.uId,
   });
 
-  factory User.fromFirebase(DocumentSnapshot snapshot) {
+  factory User.fromFirebase(String jsonString) {
+    Map<String, dynamic> json = jsonDecode(jsonString);
     return User(
-      number: snapshot['number'],
-      id: snapshot.documentID,
+      number: json['phoneNumber'],
+      uId: json['uid'],
     );
   }
+
+  String toJson() => json.encode({
+        'phoneNumber': number,
+        'uid': uId,
+      });
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,18 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screen/phone_login.dart';
 
-enum Status {
-  Uninitialized,
-  Authenticated,
-  Authenticating,
-  Unauthenticated,
-}
-
 class AuthProvider with ChangeNotifier {
   SharedPreferences _sharedPrefs;
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseUser _user;
-  Status _status = Status.Uninitialized;
   User _userModel;
   TextEditingController phoneNo;
   // String smsOTP;
@@ -30,7 +24,6 @@ class AuthProvider with ChangeNotifier {
   bool isLoading = false;
 
   User get user => _userModel;
-  Status get status => _status;
   FirebaseUser get firebaseUser => _user;
 
   // AuthProvider.initialize() {
@@ -44,6 +37,8 @@ class AuthProvider with ChangeNotifier {
     isLoggedIn = _sharedPrefs.getBool('loggedIn') ?? false;
     // print('isLoggedIn : $isLoggedIn');
     if (isLoggedIn) {
+      var userData = _sharedPrefs.getString('userData');
+      _userModel = User.fromFirebase(userData);
       _user = await _auth.currentUser();
     }
     notifyListeners();
@@ -70,15 +65,10 @@ class AuthProvider with ChangeNotifier {
   Future<void> verifyPhoneNumber(BuildContext context, String number) async {
     print('number : $number');
     final PhoneCodeSent smsOTPSent = (String verId, [int forceCodeResend]) {
-      print('here');
       this.verificationCode = verId;
       print('move to OTP');
       Navigator.pop(context);
       Navigator.pushNamed(context, OTPScreen.pageName);
-
-      // smsOTPDialog(context).then((value) {
-      //   print('sign in');
-      // });
     };
     try {
       await _auth.verifyPhoneNumber(
@@ -115,21 +105,28 @@ class AuthProvider with ChangeNotifier {
         smsCode: smsOTP,
       );
 
-      final AuthResult _user = await _auth
-          .signInWithCredential(_authCredential)
-          .then((value) => value, onError: (er) {
-        Navigator.pop(context);
-        PlatFormAlertDialogBox(
-          title: 'ALERT',
-          content: 'You have entered wrong OTP.',
-          defaultActionText: 'OK',
-        ).show(context);
-      });
+      final AuthResult _userResult =
+          await _auth.signInWithCredential(_authCredential).then(
+        (value) => value,
+        onError: (er) {
+          Navigator.pop(context);
+          PlatFormAlertDialogBox(
+            title: 'ALERT',
+            content: 'You have entered wrong OTP.',
+            defaultActionText: 'OK',
+          ).show(context);
+        },
+      );
       final FirebaseUser currentUser = await _auth.currentUser();
-      assert(_user.user.uid == currentUser.uid);
+      assert(_userResult.user.uid == currentUser.uid);
       Navigator.pop(context);
-      if (_user != null) {
+      if (_userResult != null) {
+        _userModel = User.fromFirebase(
+          userMapString(_userResult.user),
+        );
+        _sharedPrefs.setString('userData', _userModel.toJson());
         _sharedPrefs.setBool('loggedIn', true);
+
         this.isLoggedIn = true;
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -163,5 +160,12 @@ class AuthProvider with ChangeNotifier {
         .getDocuments();
 
     return qs.documents.isNotEmpty;
+  }
+
+  String userMapString(FirebaseUser user) {
+    return jsonEncode(<String, dynamic>{
+      'phoneNumber': user.phoneNumber,
+      'uid': user.uid,
+    });
   }
 }

@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Text('Hello'),
+        child: Text('Hello ${_authProvider.user.uId}'),
       ),
     );
   }
