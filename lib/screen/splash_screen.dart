@@ -49,7 +49,7 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  _navigateToHome(context,AuthProvider _authProvider) async {
+  _navigateToHome(context, AuthProvider _authProvider) async {
     final isLoggedIn = await _authProvider.getPrefsData();
     String routeName;
 

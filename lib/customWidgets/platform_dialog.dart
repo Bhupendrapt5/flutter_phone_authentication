@@ -26,7 +26,7 @@ class PlatFormDialogBox extends PlatformWidget {
 
   @override
   Widget buildCupertinoWidget(BuildContext context) {
-    return CupertinoPopupSurface(
+    return Dialog(
       child: content,
     );
   }
@@ -38,5 +38,3 @@ class PlatFormDialogBox extends PlatformWidget {
     );
   }
 }
-
-

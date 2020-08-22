@@ -50,6 +50,7 @@ class PhoneLogineScreen extends StatelessWidget {
                 child: TextFormField(
                   controller: _numberController,
                   keyboardType: TextInputType.phone,
+                  // maxLength: 10,
                   decoration: InputDecoration(
                     hintText: '10 digit mobile number',
                     contentPadding: const EdgeInsets.only(left: 10),
@@ -117,6 +118,7 @@ class PhoneLogineScreen extends StatelessWidget {
         content: _dialogContent(context, 'Verifying number'),
       ).show(context);
       var res = await provider.isNumberExist(_numberController.text);
+      print('number exist : $res');
       Navigator.pop(context);
       if (res) {
         PlatFormDialogBox(

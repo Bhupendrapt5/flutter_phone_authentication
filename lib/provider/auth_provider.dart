@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_authentication/model/user_model.dart';
 import 'package:mobile_authentication/screen/home_screen.dart';
 import 'package:mobile_authentication/screen/otp_screen.dart';
+import 'package:mobile_authentication/screen/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screen/phone_login.dart';
@@ -37,16 +38,16 @@ class AuthProvider with ChangeNotifier {
   // }
 
   Future<bool> getPrefsData() async {
-    await Future.delayed(Duration(seconds: 3)).then((value) async {
-      _sharedPrefs = await SharedPreferences.getInstance();
+    // await Future.delayed(Duration(seconds: 3)).then((value) async {
+    _sharedPrefs = await SharedPreferences.getInstance();
 
-      isLoggedIn = _sharedPrefs.getBool('loggedIn') ?? false;
-      // print('isLoggedIn : $isLoggedIn');
-      if (isLoggedIn) {
-        _user = await _auth.currentUser();
-      }
-      notifyListeners();
-    });
+    isLoggedIn = _sharedPrefs.getBool('loggedIn') ?? false;
+    // print('isLoggedIn : $isLoggedIn');
+    if (isLoggedIn) {
+      _user = await _auth.currentUser();
+    }
+    notifyListeners();
+    // });
 
     return isLoggedIn;
   }
@@ -69,6 +70,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> verifyPhoneNumber(BuildContext context, String number) async {
     print('number : $number');
     final PhoneCodeSent smsOTPSent = (String verId, [int forceCodeResend]) {
+      print('here');
       this.verificationCode = verId;
       print('move to OTP');
       Navigator.pop(context);
@@ -119,7 +121,8 @@ class AuthProvider with ChangeNotifier {
       _sharedPrefs.setBool('loggedIn', true);
       this.isLoggedIn = true;
       if (_user != null) {
-        Navigator.pushNamedAndRemoveUntil(context, HomeScreen.pageName,ModalRoute.withName(PhoneLogineScreen.pageName) );
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/', ModalRoute.withName(PhoneLogineScreen.pageName));
       }
     } catch (e) {
       print("${e.toString()}");
@@ -133,6 +136,6 @@ class AuthProvider with ChangeNotifier {
         .limit(1)
         .getDocuments();
 
-    return qs.documents.length != 0;
+    return qs.documents.isNotEmpty;
   }
 }
