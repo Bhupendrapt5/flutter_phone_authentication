@@ -114,25 +114,24 @@ class PhoneLogineScreen extends StatelessWidget {
       cancelActionText: 'Edit',
     ).show(context);
     if (confimr) {
+      // PlatFormDialogBox(
+      //   content: LoadingIndicatorWithMessage(text: 'Verifying number'),
+      // ).show(context);
+      // var res = await provider.isNumberExist(_numberController.text);
+      // print('number exist : $res');
+      // Navigator.pop(context);
+      // if (res) {
       PlatFormDialogBox(
-        content: LoadingIndicatorWithMessage(text: 'Verifying number'),
+        content: LoadingIndicatorWithMessage(text: 'Redirecting to OTP Screen'),
       ).show(context);
-      var res = await provider.isNumberExist(_numberController.text);
-      print('number exist : $res');
-      Navigator.pop(context);
-      if (res) {
-        PlatFormDialogBox(
-          content:
-              LoadingIndicatorWithMessage(text: 'Redirecting to OTP Screen'),
-        ).show(context);
-        provider.verifyPhoneNumber(context, '+91' + _numberController.text);
-      } else {
-        PlatFormAlertDialogBox(
-          title: 'ALERT',
-          content: 'Your are not registered with FOLK App',
-          defaultActionText: 'OK',
-        ).show(context);
-      }
+      provider.verifyPhoneNumber(context, '+91' + _numberController.text);
+      // } else {
+      //   PlatFormAlertDialogBox(
+      //     title: 'ALERT',
+      //     content: 'Your are not registered with FOLK App',
+      //     defaultActionText: 'OK',
+      //   ).show(context);
+      // }
     }
   }
 }

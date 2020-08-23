@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_authentication/customWidgets/loading_indicator_with_text.dart';
+import 'package:mobile_authentication/customWidgets/platform_circle_indicator.dart';
 import 'package:mobile_authentication/customWidgets/platform_dialog.dart';
 import 'package:mobile_authentication/provider/auth_provider.dart';
+import 'package:mobile_authentication/services/firebase_queryies.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -26,8 +29,25 @@ class HomeScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-        child: Text('Hello ${_authProvider.user.uId}'),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FireBaseQueries().streamUserData(_authProvider.user.uId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.waiting) {
+            print(
+              'data = ${_authProvider.user.uId}',
+            );
+            var uData = snapshot.data.documents[0];
+            return ListView(
+              children: [
+                Text('name : ${uData['name']}'),
+                Text('number : ${uData['mobile']}'),
+                Text('FOLK Guide : ${uData['folk_guide']}'),
+                Text('author code : ${_authProvider.user.uId}'),
+              ],
+            );
+          }
+          return PlatformCircularProgressIndicator().show(context);
+        },
       ),
     );
   }

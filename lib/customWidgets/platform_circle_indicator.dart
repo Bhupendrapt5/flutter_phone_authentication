@@ -1,18 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_authentication/customWidgets/plateform_widget.dart';
 
 class PlatformCircularProgressIndicator extends PlatformWidget {
   Widget show(BuildContext context) {
-    return Platform.isIOS
-        ? Builder(
-            builder: (context) => this,
-          )
-        : Builder(
-            builder: (context) => this,
-          );
+    return this;
   }
 
   @override

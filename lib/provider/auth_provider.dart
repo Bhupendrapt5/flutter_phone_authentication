@@ -154,7 +154,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> isNumberExist(String number) async {
     var qs = await Firestore.instance
-        .collection('profile')
+        .collection('Profile')
         .where('mobile', isEqualTo: number)
         .limit(1)
         .getDocuments();
